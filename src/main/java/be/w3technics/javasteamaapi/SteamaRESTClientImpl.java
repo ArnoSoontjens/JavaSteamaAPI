@@ -14,6 +14,7 @@ import be.w3technics.javasteamaapi.util.Util;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -41,6 +42,7 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         this.client = ClientBuilder.newClient();
         this.root = client.target(rootURI);
         this.mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.credentials = new Credentials();
         setupEndpoints();
     }
@@ -188,7 +190,7 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         
         String token = obj.get("token").asText();
         if(token == null) throw new SteamaAPIException("Did not receive a token.");
-        credentials.setToken(token);
+        Credentials.TOKEN = token;
     }
     
     //  Creates a webtarget from the root target that was specfied when creating the client

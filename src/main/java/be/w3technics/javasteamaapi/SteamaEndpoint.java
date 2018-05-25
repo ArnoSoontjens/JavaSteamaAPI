@@ -2,9 +2,11 @@
 package be.w3technics.javasteamaapi;
 
 import be.w3technics.javasteamaapi.mappings.PageRoot;
+import be.w3technics.javasteamaapi.util.Credentials;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import javax.security.auth.login.CredentialException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
@@ -22,7 +24,7 @@ public class SteamaEndpoint {
     
     public PageRoot getPageRoot() throws IOException {
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-        invocationBuilder.header("Authorization", "Token " );//TODO: add token
+        invocationBuilder.header("Authorization", "Token " + Credentials.TOKEN );
         
         Response response = invocationBuilder.get();
         JsonNode responseObject = mapper.readTree(response.readEntity(String.class));
@@ -42,7 +44,7 @@ public class SteamaEndpoint {
     
     public String get() throws IOException {
         Invocation.Builder invocationBuilder = target.request(MediaType.APPLICATION_JSON);
-        invocationBuilder.header("Authorization", "Token "); //TODO: add token
+        invocationBuilder.header("Authorization", "Token " + Credentials.TOKEN);
         
         Response response = invocationBuilder.get();
         return response.readEntity(String.class);

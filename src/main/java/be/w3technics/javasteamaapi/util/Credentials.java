@@ -1,10 +1,11 @@
 
 package be.w3technics.javasteamaapi.util;
 
+//TODO: credentials zouden via json file ingelezen moeten kunnen worden.
 public class Credentials {
     private String username;
     private String password;
-    private String token;
+    public static String TOKEN;
 
     public Credentials() {
     }
@@ -16,8 +17,7 @@ public class Credentials {
 
     public String getUsername() {return username;}
     public String getPassword() {return password;}
-    public String getToken() {return token;}
+
     public void setUsername(String username) {this.username = username;}
     public void setPassword(String password) {this.password = password;}
-    public void setToken(String token) {this.token = token;}
 }
