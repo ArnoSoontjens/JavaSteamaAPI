@@ -20,6 +20,7 @@ public interface SteamaRESTClient {
     *   - a SteamaAPIException when the URI was not configured correctly;
     *   - a SteamaAPIException when the response code was not 200
     */
+    public void login() throws SteamaAPIException, IOException;
     public void login(String username, String password) throws SteamaAPIException, IOException;
     public List<BitHarvester> getAllBitHarvesters() throws IOException;
     public List<Customer> getAllCustomers() throws SteamaAPIException, IOException;

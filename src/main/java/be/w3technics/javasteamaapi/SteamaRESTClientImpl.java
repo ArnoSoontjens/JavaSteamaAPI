@@ -58,6 +58,12 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         this.mapper = customMapper;
     }
     
+    @Override
+    public void login() throws SteamaAPIException, IOException {
+        if(credentials == null || credentials.getUsername() == null || credentials.getPassword() == null) 
+            throw new SteamaAPIException("Credentials are not set or username/password is missing");
+        login(credentials.getUsername(), credentials.getPassword());
+    }
 
     @Override
     public void login(String username, String password) throws SteamaAPIException, IOException {
@@ -73,11 +79,10 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
                 .request(MediaType.APPLICATION_JSON)
                 .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
         
-        if(response.getStatus() == 200) {
-            extractToken(response);
-        } else {
+        if(response.getStatus() != 200) 
             throw new SteamaAPIException("Server returned: " + response.getStatus() +": " + response.getStatusInfo());
-        }
+        
+        extractToken(response);
     }
     
     @Override
