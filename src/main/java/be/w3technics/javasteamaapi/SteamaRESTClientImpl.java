@@ -31,8 +31,8 @@ import javax.ws.rs.core.Response;
 public class SteamaRESTClientImpl implements SteamaRESTClient {
     
     private final Client client;
-    private final WebTarget root;
-    private final ObjectMapper mapper;
+    private WebTarget root;
+    private ObjectMapper mapper;
     private Credentials credentials;
     
     private SteamaEndpoint harvestersEndpoint;
@@ -41,12 +41,24 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     public SteamaRESTClientImpl(String rootURI) throws SteamaAPIException {
         this.client = ClientBuilder.newClient();
         this.root = client.target(rootURI);
-        this.mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        this.credentials = new Credentials();
         setupEndpoints();
     }
     
+    public SteamaRESTClientImpl(String rootURI, Credentials credentials) throws SteamaAPIException {
+        this(rootURI);
+        this.credentials = credentials;
+        this.mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+    
+    public SteamaRESTClientImpl(String rootURI,Credentials credentials, ObjectMapper customMapper) 
+            throws SteamaAPIException {
+        this(rootURI);
+        this.credentials = credentials;
+        this.mapper = customMapper;
+    }
+    
+
     @Override
     public void login(String username, String password) throws SteamaAPIException, IOException {
         if(root == null) throw new SteamaAPIException("The root URI was not configured yet!");
@@ -131,6 +143,11 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     }
     
     @Override
+    public List<Reading> getReadings(String URL) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public List<Reading> getReadings(String readingsURL, Date date) throws IOException {
         Date endDate = Util.getEndOfDay(date);
         return getReadings(readingsURL, date, endDate);      
@@ -151,6 +168,11 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         allReadings = mapper.readValue(result, new TypeReference<List<Reading>>(){});
         
         return allReadings;
+    }
+    
+    @Override
+    public List<Usage> getUsages(String URL) throws IOException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     @Override
@@ -203,13 +225,17 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     }
 
     @Override
-    public List<Reading> getReadings(String URL) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void setMapper(ObjectMapper customMapper) {
+        this.mapper = customMapper;
+    }   
+
+    @Override
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
     }
 
     @Override
-    public List<Usage> getUsages(String URL) throws IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Credentials getCredentials() {
+        return credentials;
     }
-    
 }

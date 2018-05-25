@@ -7,6 +7,8 @@ import be.w3technics.javasteamaapi.mappings.subobjects.Meter;
 import be.w3technics.javasteamaapi.mappings.subobjects.Reading;
 import be.w3technics.javasteamaapi.mappings.subobjects.Usage;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Utility;
+import be.w3technics.javasteamaapi.util.Credentials;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -31,4 +33,8 @@ public interface SteamaRESTClient {
     public List<Usage> getUsages(String URL) throws IOException;
     public List<Usage> getUsages(String URL, Date date) throws IOException;
     public List<Usage> getUsages(String URL, Date startDate, Date endDate) throws IOException;
+    
+    public void setMapper(ObjectMapper customMapper);
+    public void setCredentials(Credentials credentials);
+    public Credentials getCredentials();
 }
