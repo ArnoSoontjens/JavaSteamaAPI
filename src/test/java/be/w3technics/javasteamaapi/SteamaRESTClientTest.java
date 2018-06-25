@@ -9,6 +9,7 @@ package be.w3technics.javasteamaapi;
 import be.w3technics.javasteamaapi.exceptions.SteamaAPIException;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Customer;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Site;
+import be.w3technics.javasteamaapi.mappings.rootobjects.Transaction;
 import java.io.IOException;
 import java.util.List;
 import org.junit.After;
@@ -58,7 +59,15 @@ public class SteamaRESTClientTest {
         for(Site site : allSites) {
             System.out.println("Site:" + site.toString());
         }
-        
+    }
+    
+    @Test
+    public void shouldGetAllTransactions() throws Exception {
+        List<Transaction> allTransactions = client.getAllTransactions();
+        assertNotNull(allTransactions);
+        for(Transaction transaction : allTransactions){
+            System.out.println("Transaction: " + transaction.toString());
+        }
     }
     
     @Test
@@ -66,7 +75,7 @@ public class SteamaRESTClientTest {
         List<Customer> allCustomers = client.getAllCustomers();
         assertNotNull(allCustomers);
         for(Customer customer : allCustomers) {
-            System.out.println("Site:" + customer.toString());
+            System.out.println("Customer:" + customer.toString());
         }
         
     }

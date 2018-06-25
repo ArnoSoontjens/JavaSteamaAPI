@@ -43,7 +43,7 @@ public class PageRoot {
 
     @Override
     public String toString() {
-        return "BitHarvesters{" + "count=" + count + ", next=" + next + ", previous=" + previous + ", results=" + resultsString + '}';
+        return "PageRoot{" + "count=" + count + ", next=" + next + ", previous=" + previous + ", results=" + resultsString + '}';
     }
     
     

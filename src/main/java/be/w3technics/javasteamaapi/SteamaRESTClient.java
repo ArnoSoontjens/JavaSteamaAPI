@@ -4,6 +4,7 @@ import be.w3technics.javasteamaapi.exceptions.SteamaAPIException;
 import be.w3technics.javasteamaapi.mappings.rootobjects.BitHarvester;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Customer;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Site;
+import be.w3technics.javasteamaapi.mappings.rootobjects.Transaction;
 import be.w3technics.javasteamaapi.mappings.subobjects.Meter;
 import be.w3technics.javasteamaapi.mappings.subobjects.Reading;
 import be.w3technics.javasteamaapi.mappings.subobjects.Usage;
@@ -26,6 +27,7 @@ public interface SteamaRESTClient {
     public List<BitHarvester> getAllBitHarvesters() throws IOException;
     public List<Customer> getAllCustomers() throws SteamaAPIException, IOException;
     public List<Site> getAllSites() throws SteamaAPIException, IOException;
+    public List<Transaction> getAllTransactions() throws SteamaAPIException, IOException;
     //TODO: implement all other root resources
     
     public List<Meter> getMeters(String URL) throws IOException;

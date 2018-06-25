@@ -6,6 +6,7 @@ import be.w3technics.javasteamaapi.mappings.rootobjects.Customer;
 import be.w3technics.javasteamaapi.mappings.subobjects.Meter;
 import be.w3technics.javasteamaapi.mappings.PageRoot;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Site;
+import be.w3technics.javasteamaapi.mappings.rootobjects.Transaction;
 import be.w3technics.javasteamaapi.mappings.subobjects.Reading;
 import be.w3technics.javasteamaapi.mappings.subobjects.Usage;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Utility;
@@ -39,6 +40,7 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     private SteamaEndpoint harvestersEndpoint;
     private SteamaEndpoint customersEndpoint;
     private SteamaEndpoint sitesEndpoint;
+    private SteamaEndpoint transactionsEndpoint;
     
     public SteamaRESTClientImpl(String rootURI) throws SteamaAPIException {
         this.client = ClientBuilder.newClient();
@@ -124,6 +126,21 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         }
         
         return allCustomers;  
+    }
+    
+    @Override
+    public List<Transaction> getAllTransactions() throws SteamaAPIException, IOException {
+        SteamaEndpoint endpoint = transactionsEndpoint;
+        PageRoot pageRoot = endpoint.getPageRoot();
+        List<Transaction> allTransactions = mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Transaction>>(){});
+        
+        while(pageRoot.getNext() != null) {
+            endpoint = new SteamaEndpoint(this.client.target(pageRoot.getNext()));
+            pageRoot = endpoint.getPageRoot();
+            allTransactions.addAll(mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Transaction>>(){}));
+        }
+        
+        return allTransactions;
     }
     
     @Override
@@ -237,6 +254,7 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         harvestersEndpoint = createResource(SteamaRESTResources.BITHARVESTERS);
         customersEndpoint = createResource(SteamaRESTResources.CUSTOMERS);
         sitesEndpoint = createResource(SteamaRESTResources.SITES);
+        transactionsEndpoint = createResource(SteamaRESTResources.TRANSACTIONS);
     }
     
     private void extractToken(Response response) throws IOException, SteamaAPIException {
