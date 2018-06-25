@@ -10,6 +10,7 @@ import be.w3technics.javasteamaapi.mappings.rootobjects.Transaction;
 import be.w3technics.javasteamaapi.mappings.subobjects.Reading;
 import be.w3technics.javasteamaapi.mappings.subobjects.Usage;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Utility;
+import be.w3technics.javasteamaapi.mappings.subobjects.Balance;
 import be.w3technics.javasteamaapi.util.Credentials;
 import be.w3technics.javasteamaapi.util.Settings;
 import be.w3technics.javasteamaapi.util.Util;
@@ -240,6 +241,28 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         }
     
         return allUsages;
+    }
+    
+    @Override
+    public List<Balance> getBalances(String URL, Date date) throws IOException {
+        Date endDate = Util.getEndOfDay(date);
+        return getBalances(URL, date, endDate);
+    }
+    
+    @Override
+    public List<Balance> getBalances(String balancesURL, Date startDate, Date endDate) throws IOException {
+        startDate = Util.getStartOfDay(startDate);
+        endDate = Util.getEndOfDay(endDate);
+        
+        SteamaEndpoint endpoint = constructQuerywithParams(balancesURL, startDate, endDate);
+        System.out.println("Balances-URL:" + balancesURL);
+        String result = endpoint.get();
+        List<Balance> allBalances = mapper.readValue(result, new TypeReference<List<Balance>>(){});
+        for(Balance balance : allBalances) {
+            System.out.println("Balance:" + balance.toString());
+        }
+    
+        return allBalances;
     }
     
     private SteamaEndpoint constructQuerywithParams(String url, Date startDate, Date endDate) {

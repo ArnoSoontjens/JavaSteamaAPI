@@ -10,7 +10,9 @@ import be.w3technics.javasteamaapi.exceptions.SteamaAPIException;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Customer;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Site;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Transaction;
+import be.w3technics.javasteamaapi.mappings.subobjects.Balance;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -76,8 +78,17 @@ public class SteamaRESTClientTest {
         assertNotNull(allCustomers);
         for(Customer customer : allCustomers) {
             System.out.println("Customer:" + customer.toString());
-        }
-        
+        }   
     }
     
+    @Test
+    public void shouldGetBalances() throws Exception {
+        List<Customer> allCustomers = client.getAllCustomers();
+        for(Customer customer : allCustomers){
+            List<Balance> balances = client.getBalances(customer.getBalances_url(), new Date());
+            for(Balance balance : balances){
+                System.out.println("Balance: " + balance);
+            }
+        }
+    }
 }

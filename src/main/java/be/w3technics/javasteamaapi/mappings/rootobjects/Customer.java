@@ -9,6 +9,7 @@ public class Customer extends SteamaBaseObject {
     private String last_name;
     private String bit_harvester_name;
     private String utilities_url;
+    private String balances_url;
     private int site;
     private int bit_harvester;
     private int noOfReadings;
@@ -70,6 +71,14 @@ public class Customer extends SteamaBaseObject {
 
     public void setNoOfReadings(int noOfReadings) {
         this.noOfReadings = noOfReadings;
+    }
+
+    public String getBalances_url() {
+        return balances_url;
+    }
+
+    public void setBalances_url(String balances_url) {
+        this.balances_url = balances_url;
     }
 
     @Override
