@@ -8,7 +8,7 @@ public class Utility extends SteamaBaseObject {
     private String name;
     private String readings_url;
     private String usage_url;
-
+            
     public Utility() {
     }
 

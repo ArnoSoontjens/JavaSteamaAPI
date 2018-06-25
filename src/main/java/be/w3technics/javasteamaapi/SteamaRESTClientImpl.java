@@ -5,6 +5,7 @@ import be.w3technics.javasteamaapi.mappings.rootobjects.BitHarvester;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Customer;
 import be.w3technics.javasteamaapi.mappings.subobjects.Meter;
 import be.w3technics.javasteamaapi.mappings.PageRoot;
+import be.w3technics.javasteamaapi.mappings.rootobjects.Site;
 import be.w3technics.javasteamaapi.mappings.subobjects.Reading;
 import be.w3technics.javasteamaapi.mappings.subobjects.Usage;
 import be.w3technics.javasteamaapi.mappings.rootobjects.Utility;
@@ -37,6 +38,7 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     
     private SteamaEndpoint harvestersEndpoint;
     private SteamaEndpoint customersEndpoint;
+    private SteamaEndpoint sitesEndpoint;
     
     public SteamaRESTClientImpl(String rootURI) throws SteamaAPIException {
         this.client = ClientBuilder.newClient();
@@ -56,6 +58,13 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         this(rootURI);
         this.credentials = credentials;
         this.mapper = customMapper;
+    }
+    
+    public SteamaRESTClientImpl(String rootURI, String username, String password) throws SteamaAPIException {
+        this(rootURI);
+        this.credentials = new Credentials(username, password);
+        this.mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
     
     @Override
@@ -85,6 +94,21 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         extractToken(response);
     }
     
+    @Override
+    public List<Site> getAllSites() throws SteamaAPIException, IOException {
+        SteamaEndpoint endpoint = sitesEndpoint;
+        PageRoot pageRoot = endpoint.getPageRoot();
+        List<Site> allSites = mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Site>>(){});
+        
+        while(pageRoot.getNext() != null){
+            endpoint = new SteamaEndpoint(this.client.target(pageRoot.getNext()));
+            pageRoot = endpoint.getPageRoot();
+            allSites.addAll(mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Site>>(){}));
+        }
+        
+        return allSites;  
+    }
+            
     @Override
     public List<Customer> getAllCustomers() throws IOException, SteamaAPIException {
         List<Customer> allCustomers;
@@ -189,10 +213,15 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     @Override
     public List<Usage> getUsages(String usagesURL, Date startDate, Date endDate) throws IOException {
         startDate = Util.getStartOfDay(startDate);
+        endDate = Util.getEndOfDay(endDate);
         SteamaEndpoint endpoint = constructQuerywithParams(usagesURL, startDate, endDate);
+        System.out.println("Usages-URL:" + usagesURL);
         String result = endpoint.get();
         List<Usage> allUsages = mapper.readValue(result, new TypeReference<List<Usage>>(){});
-        
+        for(Usage usage : allUsages) {
+            System.out.println("USAGE (API):" + usage.toString());
+        }
+    
         return allUsages;
     }
     
@@ -207,6 +236,7 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     private void setupEndpoints() throws SteamaAPIException {
         harvestersEndpoint = createResource(SteamaRESTResources.BITHARVESTERS);
         customersEndpoint = createResource(SteamaRESTResources.CUSTOMERS);
+        sitesEndpoint = createResource(SteamaRESTResources.SITES);
     }
     
     private void extractToken(Response response) throws IOException, SteamaAPIException {
