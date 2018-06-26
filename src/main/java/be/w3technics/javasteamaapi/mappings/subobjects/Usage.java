@@ -2,6 +2,7 @@
 package be.w3technics.javasteamaapi.mappings.subobjects;
 
 import be.w3technics.javasteamaapi.mappings.rootobjects.Customer;
+import be.w3technics.javasteamaapi.mappings.rootobjects.Site;
 import java.util.Date;
 
 public class Usage {
@@ -9,6 +10,7 @@ public class Usage {
     private Date timestamp;
     private double usage;
     private Customer customer;
+    private Site site;
     
     public Usage() {
     }
@@ -37,9 +39,17 @@ public class Usage {
         this.customer = customer;
     }
 
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
+    }
+    
     @Override
     public String toString() {
-        return "Usage{" + "timestamp=" + timestamp + ", usage=" + usage + ", customer=" + customer + '}';
+        return "Usage{" + "timestamp=" + timestamp + ", usage=" + usage + ", customer=" + customer + ", site="+ site +'}';
     }
     
 }

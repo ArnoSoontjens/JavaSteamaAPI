@@ -82,12 +82,23 @@ public class SteamaRESTClientTest {
     }
     
     @Test
-    public void shouldGetBalances() throws Exception {
+    public void shouldGetBalancesPerCustomer() throws Exception {
         List<Customer> allCustomers = client.getAllCustomers();
         for(Customer customer : allCustomers){
             List<Balance> balances = client.getBalances(customer.getBalances_url(), new Date());
             for(Balance balance : balances){
                 System.out.println("Balance: " + balance);
+            }
+        }
+    }
+    
+    @Test
+    public void shouldGetTransactionsPerCustomer() throws Exception {
+        List<Customer> allCustomers = client.getAllCustomers();
+        for(Customer customer : allCustomers){
+            List<Transaction> transactions = client.getTransactions(customer.getTransactions_url());
+            for(Transaction transaction : transactions){
+                System.out.println("Transaction-PER CUSTOMER: " + transaction);
             }
         }
     }

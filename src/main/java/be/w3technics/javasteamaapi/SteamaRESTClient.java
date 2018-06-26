@@ -33,6 +33,7 @@ public interface SteamaRESTClient {
     
     public List<Meter> getMeters(String URL) throws IOException;
     public List<Utility> getUtilities(String URL) throws IOException;
+    public List<Transaction> getTransactions(String URL) throws IOException;
     public List<Reading> getReadings(String URL) throws IOException;
     public List<Reading> getReadings(String URL, Date date) throws IOException;
     public List<Reading> getReadings(String URL, Date startDate, Date endDate) throws IOException;

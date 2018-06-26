@@ -10,6 +10,7 @@ public class Customer extends SteamaBaseObject {
     private String bit_harvester_name;
     private String utilities_url;
     private String balances_url;
+    private String transactions_url;
     private int site;
     private int bit_harvester;
     private int noOfReadings;
@@ -81,10 +82,22 @@ public class Customer extends SteamaBaseObject {
         this.balances_url = balances_url;
     }
 
+    public String getTransactions_url() {
+        return transactions_url;
+    }
+
+    public void setTransactions_url(String transactions_url) {
+        this.transactions_url = transactions_url;
+    }
+
     @Override
     public String toString() {
-        return "Customer{" + "id=" + id + ", url=" + url + ", first_name=" + first_name + ", last_name=" + last_name + ", bit_harvester_name=" + bit_harvester_name + ", utilities_url=" + utilities_url + ", site=" + site + ", bit_harvester=" + bit_harvester + '}';
+        return "Customer{" + "id=" + id + ", url=" + url + ", first_name=" + first_name + ", last_name=" + last_name + ", bit_harvester_name=" + bit_harvester_name + ", utilities_url=" + utilities_url + ", balances_url=" + balances_url + ", transactions_url=" + transactions_url + ", site=" + site + ", bit_harvester=" + bit_harvester + ", noOfReadings=" + noOfReadings + '}';
     }
+
+  
+
+  
 
     
     

@@ -190,6 +190,23 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     }
     
     @Override
+    public List<Transaction> getTransactions(String transactionsURL) throws IOException {
+        List<Transaction> allTransactions;
+        
+        SteamaEndpoint endpoint = new SteamaEndpoint(this.client.target(transactionsURL));
+        PageRoot pageRoot = endpoint.getPageRoot();
+        allTransactions = mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Transaction>>(){});
+        
+        while(pageRoot.getNext() != null) {
+            endpoint = new SteamaEndpoint(this.client.target(pageRoot.getNext()));
+            pageRoot = endpoint.getPageRoot();
+            allTransactions.addAll(mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Transaction>>(){}));
+        }
+        
+        return allTransactions;
+    } 
+    
+    @Override
     public List<Reading> getReadings(String URL) throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -233,12 +250,9 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         startDate = Util.getStartOfDay(startDate);
         endDate = Util.getEndOfDay(endDate);
         SteamaEndpoint endpoint = constructQuerywithParams(usagesURL, startDate, endDate);
-        System.out.println("Usages-URL:" + usagesURL);
+
         String result = endpoint.get();
         List<Usage> allUsages = mapper.readValue(result, new TypeReference<List<Usage>>(){});
-        for(Usage usage : allUsages) {
-            System.out.println("USAGE (API):" + usage.toString());
-        }
     
         return allUsages;
     }
@@ -255,12 +269,8 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
         endDate = Util.getEndOfDay(endDate);
         
         SteamaEndpoint endpoint = constructQuerywithParams(balancesURL, startDate, endDate);
-        System.out.println("Balances-URL:" + balancesURL);
         String result = endpoint.get();
         List<Balance> allBalances = mapper.readValue(result, new TypeReference<List<Balance>>(){});
-        for(Balance balance : allBalances) {
-            System.out.println("Balance:" + balance.toString());
-        }
     
         return allBalances;
     }
