@@ -207,29 +207,39 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     } 
     
     @Override
+    public List<Transaction> getTransactions(String transactionsURL, Date createdAfter, Date createdBefore) throws IOException {
+        List<Transaction> allTransactions;
+        
+        SteamaEndpoint endpoint = constructQueryWithCreatedTime(transactionsURL, createdAfter, createdBefore);
+        PageRoot pageRoot = endpoint.getPageRoot();
+        allTransactions = mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Transaction>>(){});
+        
+        while(pageRoot.getNext() != null) {
+            endpoint = new SteamaEndpoint(this.client.target(pageRoot.getNext()));
+            pageRoot = endpoint.getPageRoot();
+            allTransactions.addAll(mapper.readValue(pageRoot.getResultsString(), new TypeReference<List<Transaction>>(){}));
+        }
+        
+        return allTransactions;
+    } 
+    
+    @Override
     public List<Reading> getReadings(String URL) throws IOException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public List<Reading> getReadings(String readingsURL, Date date) throws IOException {
+        Date startDate = Util.getStartOfDay(date);
         Date endDate = Util.getEndOfDay(date);
-        return getReadings(readingsURL, date, endDate);      
+        return getReadings(readingsURL, startDate, endDate);      
     }
     
     @Override
     public List<Reading> getReadings(String readingsURL, Date startDate, Date endDate) throws IOException {
-        List<Reading> allReadings;
-        startDate = Util.getStartOfDay(startDate);
-        if(endDate == null) {
-            endDate = Util.getEndOfDay(startDate);
-        } else {
-            endDate = Util.getEndOfDay(endDate);
-        }
-        
-        SteamaEndpoint endpoint = constructQuerywithParams(readingsURL, startDate, endDate);
+        SteamaEndpoint endpoint = constructQueryWithStartAndEndDate(readingsURL, startDate, endDate);
         String result = endpoint.get();
-        allReadings = mapper.readValue(result, new TypeReference<List<Reading>>(){});
+        List<Reading> allReadings = mapper.readValue(result, new TypeReference<List<Reading>>(){});
         
         return allReadings;
     }
@@ -241,47 +251,48 @@ public class SteamaRESTClientImpl implements SteamaRESTClient {
     
     @Override
     public List<Usage> getUsages(String usagesURL, Date date) throws IOException {
+        Date startDate = Util.getStartOfDay(date);
         Date endDate = Util.getEndOfDay(date);
-        return getUsages(usagesURL, date, endDate);
+        return getUsages(usagesURL, startDate, endDate);
     }
     
     @Override
     public List<Usage> getUsages(String usagesURL, Date startDate, Date endDate) throws IOException {
-        startDate = Util.getStartOfDay(startDate);
-        endDate = Util.getEndOfDay(endDate);
-        SteamaEndpoint endpoint = constructQuerywithParams(usagesURL, startDate, endDate);
-
+        SteamaEndpoint endpoint = constructQueryWithStartAndEndDate(usagesURL, startDate, endDate);
         String result = endpoint.get();
-        List<Usage> allUsages = mapper.readValue(result, new TypeReference<List<Usage>>(){});
-    
-        return allUsages;
+        return mapper.readValue(result, new TypeReference<List<Usage>>(){});
     }
     
     @Override
     public List<Balance> getBalances(String URL, Date date) throws IOException {
+        Date startDate = Util.getStartOfDay(date);
         Date endDate = Util.getEndOfDay(date);
-        return getBalances(URL, date, endDate);
+        return getBalances(URL, startDate, endDate);
     }
     
     @Override
     public List<Balance> getBalances(String balancesURL, Date startDate, Date endDate) throws IOException {
-        startDate = Util.getStartOfDay(startDate);
-        endDate = Util.getEndOfDay(endDate);
-        
-        SteamaEndpoint endpoint = constructQuerywithParams(balancesURL, startDate, endDate);
+        SteamaEndpoint endpoint = constructQueryWithStartAndEndDate(balancesURL, startDate, endDate);
         String result = endpoint.get();
-        List<Balance> allBalances = mapper.readValue(result, new TypeReference<List<Balance>>(){});
-    
-        return allBalances;
+        return mapper.readValue(result, new TypeReference<List<Balance>>(){});
     }
     
-    private SteamaEndpoint constructQuerywithParams(String url, Date startDate, Date endDate) {
+    private SteamaEndpoint constructQueryWithStartAndEndDate(String url, Date startDate, Date endDate) {
         return new SteamaEndpoint(
                 this.client.target(url)
                         .queryParam(Settings.Params.START_TIME, Util.dateToISO8601Format(startDate))
                         .queryParam(Settings.Params.END_TIME, Util.dateToISO8601Format(endDate))
         );
     }
+    
+    private SteamaEndpoint constructQueryWithCreatedTime(String url, Date createdAfter, Date createdBefore) {
+        return new SteamaEndpoint(
+                this.client.target(url)
+                        .queryParam(Settings.Params.CREATED_AFTER, Util.dateToISO8601Format(createdAfter))
+                        .queryParam(Settings.Params.CREATED_BEFORE, Util.dateToISO8601Format(createdBefore))
+        );
+    }
+    
     
     private void setupEndpoints() throws SteamaAPIException {
         harvestersEndpoint = createResource(SteamaRESTResources.BITHARVESTERS);
